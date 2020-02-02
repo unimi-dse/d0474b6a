@@ -8,4 +8,8 @@ getCrimesByRegion <- function() {
   View(delitti_per_regione)
 }
 
-getCrimesByRegion()
+
+runIR <- function() {
+  library(shiny)
+  shiny::runApp(system.file("shiny/", package = "delitti"), launch.browser = T)
+}
