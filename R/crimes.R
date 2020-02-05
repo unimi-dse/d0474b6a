@@ -7,6 +7,6 @@
 #'
 #' @export
 importData <- function() {
-  dataset_df<-read.csv(system.file("data", "crimes.csv", package="crimes"),sep=",")
+  dataset_df<-read.csv(system.file("data", "crimes.csv", package="crimes"),sep=";")
   return(dataset_df)
 }

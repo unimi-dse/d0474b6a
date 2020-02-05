@@ -1,29 +1,48 @@
+library(plotly)
 server <- shinyServer(function(input, output, session){
-  p <- plot_ly(
-    x = c("giraffes", "orangutans", "monkeys"),
-    y = c(20, 14, 23),
-    name = "SF Zoo",
+  dataCrimes<-read.csv(system.file("data", "crimes.csv", package="crimes"),sep=";")
+
+  table_plot <- plot_ly(
+    type = 'table',
+    header = list(
+      values = c("<b>Delitti</b>", c("Territorio", "Tipologia", "Anno", "Quantità")),
+      align = c('left', rep('center', 4)),
+      line = list(width = 1, color = 'black'),
+      fill = list(color = 'rgb(235, 100, 230)'),
+      font = list(family = "Arial", size = 14, color = "white")
+    ),
+    cells = list(
+      values = rbind(
+        rownames(dataCrimes),
+        t(as.matrix(dataCrimes$Territorio)),
+        t(as.matrix(dataCrimes$Tipo.di.delitto)),
+        t(as.matrix(dataCrimes$TIME)),
+        t(as.matrix(dataCrimes$Value))
+
+      ),
+      align = c('left', rep('center', 4)),
+      line = list(color = "black", width = 1),
+      fill = list(color = c('rgb(235, 193, 238)', 'rgba(228, 222, 249, 0.65)')),
+      font = list(family = "Arial", size = 12, color = c("black"))
+    ))
+
+
+  dataCrimesSelected <- dataCrimes[,c("Territorio","Value")]
+  delitti_per_regione = aggregate(dataCrimesSelected,
+                                  by = list(dataCrimesSelected$Territorio),
+                                  FUN = mean )
+
+  bar_plot <- plot_ly(
+    x = delitti_per_regione$Group.1,
+    y = delitti_per_regione$Value,
+    name = "Delitti per regione",
     type = "bar"
   )
 
-  p2 <- plot_ly(
-    type = "scatter",
-    x = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
-    y = c(28.8, 28.5, 37, 56.8, 69.7, 79.7, 78.5, 77.8, 74.1, 62.6, 45.3, 39.9),
-    mode = "markers+lines") %>%
-    layout(
-      xaxis = list(
-        ticktext = list("One", "Three", "Five", "Seven", "Nine", "Eleven"),
-        tickvals = list(1, 3, 5, 7, 9, 11),
-        tickmode = "array"
-      ))
 
   observe({
-    if (input$year == 2015) {
-      output$myplot <- renderPlotly(p)
-    } else {
-      output$myplot <- renderPlotly(p2)
-    }
+      output$table_plotly <- renderPlotly(table_plot)
+      output$plotly_regione <- renderPlotly(bar_plot)
 
   })
 
