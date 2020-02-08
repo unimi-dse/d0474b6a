@@ -7,6 +7,6 @@ Maintainer: Camilla Gotta <camigotta@gmail.com>
 Description: This app shows all crimes in Italy
 License: GPL-3
 Encoding: UTF-8
-Imports: ggplot2, shiny, plotly
+Imports: utils, ggplot2, shiny, plotly
 LazyData: true
 RoxygenNote: 7.0.2

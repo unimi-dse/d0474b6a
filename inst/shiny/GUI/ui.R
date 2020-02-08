@@ -6,10 +6,11 @@ ui <- shinyUI(
                         headerPanel("Delitti italiani - Grafici"),
                         sidebarPanel(
                           selectInput("year", "Perfavore selezione l'anno",
-                                      choices=c(2015, 2016, 2017)),
+                                      choices=c("Tutti","2014","2015", "2016", "2017", "2018")),
                         ),
                         mainPanel(
-                          plotlyOutput("plotly_regione")
+                          plotlyOutput("plotly_regione"),
+                          plotlyOutput("plotly_crimini")
                         )
                       )
              ),

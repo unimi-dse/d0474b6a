@@ -27,22 +27,45 @@ server <- shinyServer(function(input, output, session){
     ))
 
 
-  dataCrimesSelected <- dataCrimes[,c("Territorio","Value")]
-  delitti_per_regione = aggregate(dataCrimesSelected,
-                                  by = list(dataCrimesSelected$Territorio),
-                                  FUN = mean )
-
-  bar_plot <- plot_ly(
-    x = delitti_per_regione$Group.1,
-    y = delitti_per_regione$Value,
-    name = "Delitti per regione",
-    type = "bar"
-  )
-
-
   observe({
+
+      dataCrimesSelected <- dataCrimes[,c("Territorio","Value","TIME")]
+      dataFiltered <- dataCrimesSelected
+      delitti_per_regione <- aggregate(dataCrimesSelected,
+                                      by = list(dataCrimesSelected$Territorio),
+                                      FUN = mean)
+
+      if (input$year != "Tutti") {
+        dataFiltered <- dataCrimesSelected[dataCrimesSelected$TIME == toString(input$year),]
+        delitti_per_regione <- aggregate(dataFiltered,
+                                         by = list(dataFiltered$Territorio),
+                                         FUN = mean )
+        dataCrimesYear <- dataCrimes[dataCrimes$TIME == toString(input$year),]
+      }
+
+
+      bar_plot <- plot_ly(
+        x = delitti_per_regione$Group.1,
+        y = delitti_per_regione$Value,
+        name = "Media delitti per regione",
+        type = "bar"
+      )%>%
+        layout(title = "Media delitti per regione",
+               xaxis = list(title = ""),
+               yaxis = list(title = ""))
+
+      pie_plot <- plot_ly(dataFiltered, labels = ~dataFiltered$Territorio, values = ~dataFiltered$Value, type = 'pie') %>%
+        layout(title = 'Totale crimini per regione',
+               xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+               yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+
+
+
+
       output$table_plotly <- renderPlotly(table_plot)
       output$plotly_regione <- renderPlotly(bar_plot)
+      output$plotly_crimini <- renderPlotly(pie_plot)
 
   })
 
